@@ -1,45 +1,208 @@
-.MintNFT {
-    text-align: center;
+/* ===== Mint Page ===== */
+.mint-page {
+  animation: fadeInUp 0.5s ease;
 }
 
-.MintNFT-header {
-    background-color: #282c34;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+.mint-card {
+  position: relative;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.mint-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: var(--radius-xl);
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(124, 58, 237, 0.3),
+    transparent 50%,
+    rgba(6, 182, 212, 0.3)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.mint-card h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+}
+
+/* ===== NFT Image Preview ===== */
+.nft-preview-container {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.nft-preview-container::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  pointer-events: none;
 }
 
 .nft-image {
-    width: 300px;
-    height: 300px;
-    margin-bottom: 20px;
-    border: 5px solid #007bff;
-    border-radius: 15px;
+  width: 280px;
+  height: 280px;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  transition: transform var(--transition-base);
+  display: block;
 }
 
+.nft-preview-container:hover .nft-image {
+  transform: scale(1.03);
+}
+
+.preview-label {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.25rem 0.6rem;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.shuffle-link {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-base);
+  padding: 0;
+  line-height: 1;
+}
+
+.shuffle-link:hover {
+  color: var(--accent-2);
+  border-color: rgba(6, 182, 212, 0.4);
+  transform: rotate(180deg);
+}
+
+/* ===== Mint Button ===== */
 .mint-button {
-    background-color: #007bff;
-        color: white;
-        border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-        box-shadow: 2px 5px #0056b3;
+  width: 100%;
+  padding: 0.85rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: var(--font-family);
+  color: white;
+  background: var(--gradient-accent);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  letter-spacing: -0.01em;
 }
 
-.mint-button:active {
-    background-color: #0056b3;
-    box-shadow: 0 2px #0056b3;
-    transform: translateY(2px);
+.mint-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--glow-accent);
+}
+
+.mint-button:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .mint-button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.mint-button .spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+.mint-legend {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  text-align: center;
+}
+
+.mint-legend strong {
+  color: var(--text-secondary);
+}
+
+/* ===== Connect Prompt ===== */
+.connect-prompt {
+  text-align: center;
+  animation: fadeInUp 0.5s ease;
+}
+
+.connect-prompt .prompt-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+.connect-prompt p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+  .mint-card {
+    padding: 1.5rem;
+    max-width: 100%;
+  }
+
+  .nft-image {
+    width: 240px;
+    height: 240px;
+  }
 }

@@ -1,16 +1,21 @@
 import { useState, useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, NavLink } from "react-router-dom";
 import { ethers } from "ethers";
 import MintNFT from "./components/MintNFT";
 import ViewNFTs from "./components/ViewNFTs";
 import "./App.css";
+
+function truncateAddress(address) {
+  if (!address) return "";
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+}
 
 export default function App() {
   const [account, setAccount] = useState(null);
   const [network, setNetwork] = useState(null);
   const [provider, setProvider] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
-  const [imageURLs, setImageURLs] = useState([])
+  const [imageURLs, setImageURLs] = useState([]);
 
   useEffect(() => {
     const initializeProvider = async () => {
@@ -23,7 +28,6 @@ export default function App() {
         }
       } else {
         console.error("window.ethereum is not defined");
-        alert("Please install MetaMask");
       }
     };
 
@@ -31,46 +35,30 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const checkConnection = async () => {
-      if (provider) {
-        try {
-          const accounts = await provider.listAccounts();
-          if (accounts.length > 0) {
-            setAccount(accounts[0].address || accounts[0]); // Asegurar que account sea una cadena
-            const network = await provider.getNetwork();
-            setNetwork(network);
-          } else {
-            console.error("No accounts found");
-          }
-        } catch (error) {
-          console.error("Error checking connection", error);
-        }
+    const handleAccountsChanged = (accounts) => {
+      if (accounts.length > 0) {
+        setAccount(accounts[0].address || accounts[0]);
+      } else {
+        setAccount(null);
       }
     };
 
-    checkConnection();
+    const handleChainChanged = async () => {
+      if (provider) {
+        const network = await provider.getNetwork();
+        setNetwork(network);
+      }
+    };
 
     if (window.ethereum) {
-      window.ethereum.on('accountsChanged', (accounts) => {
-        if (accounts.length > 0) {
-          setAccount(accounts[0].address || accounts[0]); // Asegurar que account sea una cadena
-        } else {
-          setAccount(null);
-        }
-      });
-
-      window.ethereum.on('chainChanged', async () => {
-        if (provider) {
-          const network = await provider.getNetwork();
-          setNetwork(network);
-        }
-      });
+      window.ethereum.on("accountsChanged", handleAccountsChanged);
+      window.ethereum.on("chainChanged", handleChainChanged);
     }
 
     return () => {
       if (window.ethereum) {
-        window.ethereum.removeListener('accountsChanged', () => { });
-        window.ethereum.removeListener('chainChanged', () => { });
+        window.ethereum.removeListener("accountsChanged", handleAccountsChanged);
+        window.ethereum.removeListener("chainChanged", handleChainChanged);
       }
     };
   }, [provider]);
@@ -82,7 +70,7 @@ export default function App() {
       try {
         const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
         if (accounts.length > 0) {
-          setAccount(accounts[0].address || accounts[0]); // Asegurar que account sea una cadena
+          setAccount(accounts[0].address || accounts[0]);
         }
         const network = await provider.getNetwork();
         setNetwork(network);
@@ -106,7 +94,7 @@ export default function App() {
           method: "wallet_addEthereumChain",
           params: [
             {
-              chainId: "0xaa36a7", // Chain ID de Sepolia en hexadecimal
+              chainId: "0xaa36a7",
               chainName: "Sepolia Test Network",
               nativeCurrency: {
                 name: "SepoliaETH",
@@ -126,7 +114,6 @@ export default function App() {
         setIsConnecting(false);
       }
     } else {
-      alert("Please install MetaMask");
       setIsConnecting(false);
     }
   };
@@ -135,40 +122,86 @@ export default function App() {
     if (!account) {
       await connectWallet();
     }
-    if (network && network.chainId !== 11155111) {
-      // Asegúrate de que el networkId sea el correcto para Sepolia
+    if (network && network.chainId !== 11155111n) {
       await switchToSepolia();
     }
   };
 
-  const saveImageUrl = (imageURL) => {
-    const updateImageUrls = [...imageURLs, imageURL];
+  const disconnectWallet = () => {
+    setAccount(null);
+    setNetwork(null);
+  };
 
-    setImageURLs(updateImageUrls)
-  }
+  const saveImageUrl = (imageURL) => {
+    setImageURLs((prev) => [...prev, imageURL]);
+  };
+
+  const getNetworkName = () => {
+    if (!network) return null;
+    const id = Number(network.chainId);
+    const names = {
+      1: "Mainnet",
+      11155111: "Sepolia",
+      137: "Polygon",
+      80001: "Mumbai",
+    };
+    return names[id] || `Chain ${id}`;
+  };
 
   return (
     <Router>
       <div className="App">
         <nav className="App-nav">
-          <ul>
-            <li>
-              <Link to="/">Mint NFT</Link>
-            </li>
-            <li>
-              <Link to="/view-nfts">View NFTs</Link>
-            </li>
-          </ul>
-          <button onClick={handleConnectOrSwitch} className="connect-button" disabled={isConnecting}>
-            {account ? `Connected to: ${account}` : "Connect Wallet"}
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
+            <span className="nav-brand">⬡ NFT Manager</span>
+            <ul>
+              <li>
+                <NavLink to="/" end>Mint</NavLink>
+              </li>
+              <li>
+                <NavLink to="/view-nfts">Collection</NavLink>
+              </li>
+            </ul>
+          </div>
+          <div className="wallet-area">
+            {account && network && (
+              <span className="network-badge">{getNetworkName()}</span>
+            )}
+            {account ? (
+              <>
+                <button
+                  onClick={handleConnectOrSwitch}
+                  className="connect-button connected"
+                >
+                  <span className="status-dot"></span>
+                  {truncateAddress(account)}
+                </button>
+                <button
+                  onClick={disconnectWallet}
+                  className="disconnect-button"
+                  title="Disconnect wallet"
+                >
+                  ✕
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={handleConnectOrSwitch}
+                className="connect-button"
+                disabled={isConnecting}
+              >
+                {isConnecting ? "Connecting..." : "Connect Wallet"}
+              </button>
+            )}
+          </div>
         </nav>
-        <Routes>
-          <Route path="/" element={<MintNFT account={account} saveImageUrl={saveImageUrl} />} />
-          <Route path="/view-nfts" element={<ViewNFTs account={account} imageURLs={imageURLs} />} />
-        </Routes>
+        <div className="page-container">
+          <Routes>
+            <Route path="/" element={<MintNFT account={account} saveImageUrl={saveImageUrl} />} />
+            <Route path="/view-nfts" element={<ViewNFTs account={account} imageURLs={imageURLs} />} />
+          </Routes>
+        </div>
       </div>
     </Router>
   );
 }
-

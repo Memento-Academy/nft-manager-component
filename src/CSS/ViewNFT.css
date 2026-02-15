@@ -1,105 +1,218 @@
-.ViewNFTs {
-    text-align: center;
+/* ===== View NFTs Page ===== */
+.view-page {
+  width: 100%;
+  max-width: 900px;
+  animation: fadeInUp 0.5s ease;
 }
 
-.ViewNFTs-header {
-    background-color: #282c34;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+.view-page h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
 }
 
-.nft-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.nft-item {
-    margin: 10px;
-    text-align: center;
-}
-
-.nft-item img {
-    width: 200px;
-    height: 300px;
-    border: 5px solid #61dafb;
-    border-radius: 15px;
-}
-
-.nft-item p {
-    color: #61dafb;
-}
-
-
+/* ===== NFT Card Grid ===== */
 .nft-grid {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    width: 50%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.25rem;
 }
 
 .nft-card {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background-color: #f9f9f9;
-        padding: 10px;
-    border-radius: 8px;
-    width: 300px;
-        /* Ajusta este valor según tus necesidades */
+  position: relative;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all var(--transition-base);
+  cursor: default;
 }
 
-.ViewNFTs-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    /* Cambia el color del texto a blanco */
+.nft-card:hover {
+  transform: translateY(-4px);
+  background: var(--bg-card-hover);
+  box-shadow: var(--glow-accent);
+  border-color: rgba(124, 58, 237, 0.25);
 }
 
-.nft-table {
-    width: 50%;
-    max-width: 600px;
-    border-collapse: collapse;
-    margin-top: 20px;
-    border: 1px solid #007bff;
-    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.5);
-    /* Añadir sombra azul a la tabla */
+.nft-card-image {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+  transition: transform var(--transition-base);
 }
 
-.nft-table th,
-.nft-table td {
-    border: 1px solid #007bff;
-    text-align: center;
-    color: white;
-    /* Cambia el color del texto a blanco */
+.nft-card:hover .nft-card-image {
+  transform: scale(1.05);
 }
 
-.nft-table th {
-    background-color: #007bff;
+.nft-card-image-wrapper {
+  overflow: hidden;
+  position: relative;
 }
 
-.nft-table td {
-    background-color: #333;
-}
-.nft-image-small {
-    width: 30px;
-    height: 30px;
-        border: 2px solid #007bff;
-            /* Borde del mismo color que el fondo del botón */
-            border-radius: 5px;
-    object-fit: cover;
+.nft-card-image-wrapper::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(transparent, rgba(10, 10, 26, 0.8));
+  pointer-events: none;
 }
 
-.token-id {
-    font-size: 10px;
-        color: white;
-        /* Cambia el color del texto a blanco */
+.nft-card-info {
+  padding: 0.85rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nft-card-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.nft-card-id {
+  font-size: 0.9rem;
+  font-weight: 700;
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===== Empty State ===== */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-secondary);
+}
+
+.empty-state .empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+  animation: float 3s ease-in-out infinite;
+}
+
+.empty-state p {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state .empty-hint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* ===== Skeleton Loading ===== */
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.25rem;
+}
+
+.skeleton-card {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+}
+
+.skeleton-image {
+  width: 100%;
+  aspect-ratio: 1;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+.skeleton-info {
+  padding: 0.85rem 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.skeleton-text {
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+.skeleton-text.short {
+  width: 40px;
+}
+
+.skeleton-text.medium {
+  width: 60px;
+}
+
+/* ===== Connect Prompt (shared) ===== */
+.connect-prompt {
+  text-align: center;
+  animation: fadeInUp 0.5s ease;
+}
+
+.connect-prompt .prompt-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+.connect-prompt p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+/* ===== Error State ===== */
+.error-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #f87171;
+}
+
+.error-state .error-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.error-state p {
+  font-size: 0.95rem;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+  .nft-grid,
+  .skeleton-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  .view-page h2 {
+    font-size: 1.3rem;
+  }
 }
